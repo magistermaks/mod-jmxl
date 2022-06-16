@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.darktree.jmxl.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "client": [
+    "ModelElementDeserializerMixin",
+    "JsonUnbakedModelMixin",
+    "JsonUnbakedModelDeserializerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

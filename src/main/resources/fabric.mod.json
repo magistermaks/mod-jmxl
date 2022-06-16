@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "jmxl",
+  "version": "${version}",
+  "name": "JMXL",
+  "description": "Json Model Extensions (Light)",
+  "authors": ["magistermaks"],
+  "contact": {
+    "website": "darktree.net",
+    "github": "https://github.com/magistermaks/mod-jmxl"
+  },
+  "license": "MIT",
+  "icon": "assets/jmxl/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "net.darktree.jmxl.client.JmxlInitializer"
+    ]
+  },
+  "mixins": [
+    "jmxl.mixins.json"
+  ],
+  "custom": {
+    "modmenu": {
+      "badges": ["library"]
+    }
+  },
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "1.19"
+  }
+}

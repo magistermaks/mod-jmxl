@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "jmxl_test",
+  "version": "1.0",
+  "name": "JMXL Test Mod",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.darktree.test.Test"
+    ]
+  },
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "1.19"
+  }
+}

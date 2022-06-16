@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "jmxl_test:block/debug"
+    }
+  }
+}
