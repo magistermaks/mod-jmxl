@@ -8,9 +8,9 @@ maven {
     url 'http://maven.darktree.net'
 }
 
-// add to the 'dependencies' block, change '1.0' to the desired version
-modImplementation "net.darktree:JMXL:1.0"
-include "net.darktree:JMXL:1.0"
+// add to the 'dependencies' block, change '1.1' to the desired version
+modImplementation "net.darktree:JMXL:1.1"
+include "net.darktree:JMXL:1.1"
 ```
 Or by dropping the JMXL jar into `./run/mods` directory
 

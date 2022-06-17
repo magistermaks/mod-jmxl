@@ -2,12 +2,14 @@
   "schemaVersion": 1,
   "id": "jmxl",
   "version": "${version}",
-  "name": "JMXL",
-  "description": "Json Model Extensions (Light)",
+  "name": "Json Model Extensions (Light)",
+  "description": "Simple library bringing some extensions to the Minecraft block model format",
   "authors": ["magistermaks"],
   "contact": {
-    "website": "darktree.net",
-    "github": "https://github.com/magistermaks/mod-jmxl"
+    "website": "http://darktree.net",
+    "homepage": "http://darktree.net",
+    "sources": "https://github.com/magistermaks/mod-jmxl",
+    "issues": "https://github.com/magistermaks/mod-jmxl/issues"
   },
   "license": "MIT",
   "icon": "assets/jmxl/icon.png",
@@ -28,6 +30,6 @@
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": ["1.17.x", "1.18.x"]
+    "minecraft": ["1.19.x"]
   }
 }
