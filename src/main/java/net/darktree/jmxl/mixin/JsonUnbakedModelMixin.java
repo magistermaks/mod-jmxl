@@ -53,12 +53,13 @@ public abstract class JsonUnbakedModelMixin {
 		return MATERIALS.get((element instanceof JmxlModelElement jmxl) ? jmxl.layer : BlendMode.DEFAULT);
 	}
 
-	@Inject(method="bake(Lnet/minecraft/client/render/model/ModelLoader;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At("HEAD"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void bake(ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, CallbackInfoReturnable<BakedModel> info) {
+	@Inject(method="bake(Lnet/minecraft/client/render/model/ModelLoader;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
+	public void bake(ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
 
-		// FIXME: injecting before new BasicBakedModel Builder would be better because then the sprite could be captured and reused
+		// TODO: Change the cursed at to '@At(value="INVOKE_ASSIGN", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0)'
+		// TODO: once a issue in mixin is fixed (https://github.com/SpongePowered/Mixin/pull/514), current workaround by LlamaLad7.
+
 		JsonUnbakedModel self = ((JsonUnbakedModel) (Object) this);
-		Sprite particle = textureGetter.apply(self.resolveSprite(JsonUnbakedModel.PARTICLE_KEY));
 
 		if (self instanceof JmxlUnbakedModel) {
 			QuadEmitter emitter = MESH.getEmitter();
