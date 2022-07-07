@@ -6,6 +6,7 @@ import net.darktree.jmxl.client.JmxlUnbakedModel;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
@@ -38,19 +39,18 @@ public abstract class JsonUnbakedModelMixin {
 
 	private final static Renderer RENDERER;
 	private final static MeshBuilder MESH;
-	private final static Map<BlendMode, RenderMaterial> MATERIALS = new IdentityHashMap<>();
+	private final static MaterialFinder FINDER;
+	private final static RenderMaterial DEFAULT;
 
 	static {
 		RENDERER = RendererAccess.INSTANCE.getRenderer();
 		MESH = Objects.requireNonNull(RENDERER).meshBuilder();
-
-		for (BlendMode mode : BlendMode.values()) {
-			MATERIALS.put(mode, RENDERER.materialFinder().blendMode(0, mode).find());
-		}
+		FINDER = RENDERER.materialFinder();
+		DEFAULT = FINDER.find();
 	}
 
 	private static RenderMaterial getMaterial(ModelElement element) {
-		return MATERIALS.get((element instanceof JmxlModelElement jmxl) ? jmxl.layer : BlendMode.DEFAULT);
+		return (element instanceof JmxlModelElement jmxl) ? FINDER.blendMode(0, jmxl.layer).emissive(0, jmxl.emissive).disableDiffuse(0, jmxl.no_diffuse).disableAo(0, jmxl.no_ambient).find() : DEFAULT;
 	}
 
 	@Inject(method="bake(Lnet/minecraft/client/render/model/ModelLoader;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
