@@ -4,9 +4,10 @@
   "package": "net.darktree.jmxl.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "ModelElementDeserializerMixin",
+    "JsonUnbakedModelDeserializerMixin",
     "JsonUnbakedModelMixin",
-    "JsonUnbakedModelDeserializerMixin"
+    "ModelElementDeserializerMixin",
+    "IndigoItemRenderContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1
