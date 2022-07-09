@@ -1,0 +1,4 @@
+{
+  "parent": "jmxl_test:block/debug",
+  "jmxl": true
+}
