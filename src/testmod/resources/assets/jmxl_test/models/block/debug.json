@@ -6,7 +6,7 @@
     "b": "minecraft:block/red_stained_glass",
     "c": "minecraft:block/stone",
     "d": "minecraft:block/lime_stained_glass",
-    "particle": "#all"
+    "particle": "minecraft:block/magma"
   },
   "elements": [
     {
@@ -27,38 +27,40 @@
       "to": [ 14, 14, 14 ],
       "jmxl_layer": "CUTOUT",
       "faces": {
-        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "down" },
-        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "up" },
-        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "north" },
-        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "south" },
-        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "west" },
-        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a", "cullface": "east" }
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a" },
+        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#a" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#a" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#a" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#a" }
       }
     },
     {
       "from": [ 4, 4, 4 ],
       "to": [ 12, 12, 12 ],
       "jmxl_layer": "TRANSLUCENT",
+      "jmxl_emissive": true,
+      "jmxl_diffuse": false,
+      "jmxl_ambient_occlusion": false,
       "faces": {
-        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "down" },
-        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "up" },
-        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "north" },
-        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "south" },
-        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "west" },
-        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b", "cullface": "east" }
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b" },
+        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#b" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#b" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#b" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#b" }
       }
     },
     {
       "from": [ 6, 6, 6 ],
       "to": [ 10, 10, 10 ],
-      "jmxl_layer": "SOLID",
       "faces": {
-        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "down" },
-        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "up" },
-        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "north" },
-        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "south" },
-        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "west" },
-        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c", "cullface": "east" }
+        "down":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c" },
+        "up":    { "uv": [ 0, 0, 16, 16 ], "texture": "#c" },
+        "north": { "uv": [ 0, 0, 16, 16 ], "texture": "#c" },
+        "south": { "uv": [ 0, 0, 16, 16 ], "texture": "#c" },
+        "west":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c" },
+        "east":  { "uv": [ 0, 0, 16, 16 ], "texture": "#c" }
       }
     }
   ]
