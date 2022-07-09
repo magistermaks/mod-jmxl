@@ -89,12 +89,12 @@ public abstract class JsonUnbakedModelMixin {
 
 	@Shadow
 	private ModelOverrideList compileOverrides(ModelLoader loader, JsonUnbakedModel parent) {
-		return null;
+		throw new IllegalStateException();
 	}
 
 	@Shadow
 	private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings, Identifier id) {
-		return null;
+		throw new IllegalStateException();
 	}
 
 }
