@@ -2,6 +2,7 @@ package net.darktree.jmxl.client;
 
 import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
+import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
@@ -28,6 +29,7 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 	final private boolean hasDepth;
 	final private boolean isSideLit;
 	final private boolean usesAo;
+	private List<BakedQuad>[] cache = null;
 
 	public JmxlBakedModel(Sprite sprite, Mesh mesh, ModelTransformation transformation, ModelOverrideList overrides, boolean hasDepth, boolean isSideLit, boolean usesAo) {
 		// called from Unbaked Model
@@ -62,7 +64,15 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 	 */
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-		return null;
+		if (cache == null) {
+			cache = ModelHelper.toQuadLists(mesh);
+		}
+
+		if (face == null) {
+			return cache[ModelHelper.NULL_FACE_ID];
+		}
+
+		return cache[face.getId()];
 	}
 
 	public boolean useAmbientOcclusion() {
