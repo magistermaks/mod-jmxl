@@ -5,8 +5,8 @@ import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public class JmxlModelElement extends ModelElement {
 	public final boolean no_diffuse;
 	public final boolean no_ambient;
 
-	public JmxlModelElement(Vec3f from, Vec3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade, BlendMode layer, boolean emissive, boolean diffuse, boolean ambient) {
+	public JmxlModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade, BlendMode layer, boolean emissive, boolean diffuse, boolean ambient) {
 		super(from, to, faces, rotation, shade);
 		this.layer = layer;
 		this.emissive = emissive;

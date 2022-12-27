@@ -7,7 +7,7 @@ import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3f;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,7 +27,7 @@ public abstract class ModelElementDeserializerMixin {
 	private final static Gson GSON = new Gson();
 
 	@Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;", at=@At("TAIL"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<ModelElement> info, JsonObject json, Vec3f from, Vec3f to, ModelRotation rotation, Map<Direction, ModelElementFace> faces, boolean shade) throws JsonParseException {
+	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<ModelElement> info, JsonObject json, Vector3f from, Vector3f to, ModelRotation rotation, Map<Direction, ModelElementFace> faces, boolean shade) throws JsonParseException {
 
 		// technically this check is optional
 		if (json.has(LAYER) || json.has(EMISSIVE) || json.has(DIFFUSE) || json.has(AMBIENT)) {

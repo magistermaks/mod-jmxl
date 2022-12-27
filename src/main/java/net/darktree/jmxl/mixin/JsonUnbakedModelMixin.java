@@ -10,10 +10,7 @@ import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.ModelBakeSettings;
-import net.minecraft.client.render.model.ModelLoader;
+import net.minecraft.client.render.model.*;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
@@ -53,8 +50,8 @@ public abstract class JsonUnbakedModelMixin {
 		return (element instanceof JmxlModelElement jmxl) ? FINDER.blendMode(0, jmxl.layer).emissive(0, jmxl.emissive).disableDiffuse(0, jmxl.no_diffuse).disableAo(0, jmxl.no_ambient).find() : DEFAULT;
 	}
 
-	@Inject(method="bake(Lnet/minecraft/client/render/model/ModelLoader;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void bake(ModelLoader loader, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
+	@Inject(method="bake(Lnet/minecraft/client/render/model/Baker;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
+	public void bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
 
 		// TODO: Change the cursed at to '@At(value="INVOKE_ASSIGN", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0)'
 		// TODO: once a issue in mixin is fixed (https://github.com/SpongePowered/Mixin/pull/514), current workaround by LlamaLad7.
@@ -83,12 +80,12 @@ public abstract class JsonUnbakedModelMixin {
 
 			}
 
-			info.setReturnValue(new JmxlBakedModel(particle, MESH.build(), self.getTransformations(), this.compileOverrides(loader, parent), hasDepth, self.getGuiLight().isSide(), self.useAmbientOcclusion()));
+			info.setReturnValue(new JmxlBakedModel(particle, MESH.build(), self.getTransformations(), this.compileOverrides(baker, parent), hasDepth, self.getGuiLight().isSide(), self.useAmbientOcclusion()));
 		}
 	}
 
 	@Shadow
-	private ModelOverrideList compileOverrides(ModelLoader loader, JsonUnbakedModel parent) {
+	private ModelOverrideList compileOverrides(Baker baker, JsonUnbakedModel parent) {
 		throw new IllegalStateException();
 	}
 
