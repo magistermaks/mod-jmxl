@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
-import net.minecraft.block.Material;
+import net.minecraft.block.MapColor;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroups;
@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 public class Test implements ModInitializer {
 
 	public final static Identifier ID = new Identifier("jmxl_test", "debug");
-	public final static Block TEST_BLOCK = new Block(FabricBlockSettings.of(Material.REDSTONE_LAMP).nonOpaque().strength(0.3F).sounds(BlockSoundGroup.GLASS));
+	public final static Block TEST_BLOCK = new Block(FabricBlockSettings.create().solid().mapColor(MapColor.BROWN).nonOpaque().strength(0.3F).sounds(BlockSoundGroup.GLASS));
 	public final static Item TEST_ITEM = new BlockItem(TEST_BLOCK, new Item.Settings());
 
 	@Override
