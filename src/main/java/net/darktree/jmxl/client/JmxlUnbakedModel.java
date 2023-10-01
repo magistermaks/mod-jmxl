@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class JmxlUnbakedModel extends JsonUnbakedModel {
 
-	public JmxlUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, boolean ambientOcclusion, @Nullable JsonUnbakedModel.GuiLight guiLight, ModelTransformation transformations, List<ModelOverride> overrides) {
+	public JmxlUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, Boolean ambientOcclusion, @Nullable JsonUnbakedModel.GuiLight guiLight, ModelTransformation transformations, List<ModelOverride> overrides) {
 		super(parentId, elements, textureMap, ambientOcclusion, guiLight, transformations, overrides);
 	}
 

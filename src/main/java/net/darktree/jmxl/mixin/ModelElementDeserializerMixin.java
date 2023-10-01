@@ -9,6 +9,7 @@ import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.util.math.Direction;
 import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -20,10 +21,19 @@ import java.util.Map;
 @Mixin(targets={"net.minecraft.client.render.model.json.ModelElement$Deserializer"})
 public abstract class ModelElementDeserializerMixin {
 
+	@Unique
 	private final static String LAYER = "jmxl_layer";
+
+	@Unique
 	private final static String EMISSIVE = "jmxl_emissive";
+
+	@Unique
 	private final static String DIFFUSE = "jmxl_diffuse";
+
+	@Unique
 	private final static String AMBIENT = "jmxl_ambient_occlusion";
+
+	@Unique
 	private final static Gson GSON = new Gson();
 
 	@Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;", at=@At("TAIL"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
@@ -41,6 +51,7 @@ public abstract class ModelElementDeserializerMixin {
 		}
 	}
 
+	@Unique
 	private boolean getBoolean(JsonObject object, String key, boolean def) {
 		return object.has(key) ? object.get(key).getAsBoolean() : def;
 	}

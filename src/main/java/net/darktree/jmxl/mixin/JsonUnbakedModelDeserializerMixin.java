@@ -15,6 +15,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -27,10 +28,11 @@ import java.util.Map;
 @Mixin(JsonUnbakedModel.Deserializer.class)
 public abstract class JsonUnbakedModelDeserializerMixin {
 
+	@Unique
 	private final static String KEY = "jmxl";
 
 	@Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;", at=@At("TAIL"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<JsonUnbakedModel> info, JsonObject jsonObject, List<ModelElement> elements, String string, Map<String, Either<SpriteIdentifier, String>> sprites, boolean ao, ModelTransformation transformation, List<ModelOverride> overrides, JsonUnbakedModel.GuiLight light, Identifier identifier) throws JsonParseException {
+	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<JsonUnbakedModel> info, JsonObject jsonObject, List<ModelElement> elements, String string, Map<String, Either<SpriteIdentifier, String>> sprites, Boolean ao, ModelTransformation transformation, List<ModelOverride> overrides, JsonUnbakedModel.GuiLight light, Identifier identifier) throws JsonParseException {
 		JsonObject object = jsonElement.getAsJsonObject();
 
 		if (object.has(KEY) && object.get(KEY).getAsBoolean()) {
