@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.1-SNAPSHOT'
+	id 'fabric-loom' version '1.6-SNAPSHOT'
 	id 'maven-publish'
 }
 
@@ -41,11 +41,6 @@ dependencies {
 	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
-tasks.withType(JavaCompile).configureEach {
-	// Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-	it.options.release = 17
-}
-
 processResources {
 	inputs.property "version", project.version
 	filteringCharset "UTF-8"
@@ -58,24 +53,12 @@ processResources {
 java {
 	archivesBaseName = project.archives_base_name
 	withSourcesJar()
+
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(21))
+	}
 }
 
 jar {
 	from("LICENSE")
-}
-
-// configure the maven publication
-publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-
-	repositories {
-		maven {
-			url = layout.buildDirectory.dir('maven')
-		}
-		mavenLocal()
-	}
 }
