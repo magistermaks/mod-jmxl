@@ -58,8 +58,8 @@ public abstract class JsonUnbakedModelMixin {
 		return (element instanceof JmxlModelElement jmxl) ? FINDER.blendMode(0, jmxl.layer).emissive(0, jmxl.emissive).disableDiffuse(0, jmxl.no_diffuse).disableAo(0, jmxl.no_ambient).find() : DEFAULT;
 	}
 
-	@Inject(method="bake(Lnet/minecraft/client/render/model/Baker;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Lnet/minecraft/util/Identifier;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, Identifier id, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
+	@Inject(method="bake(Lnet/minecraft/client/render/model/Baker;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
+	public void bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
 
 		// TODO: Change the cursed at to '@At(value="INVOKE_ASSIGN", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0)'
 		// TODO: once a issue in mixin is fixed (https://github.com/SpongePowered/Mixin/pull/514), current workaround by LlamaLad7.
@@ -74,15 +74,15 @@ public abstract class JsonUnbakedModelMixin {
 
 				for (Direction direction : element.faces.keySet()) {
 					ModelElementFace modelElementFace = element.faces.get(direction);
-					Sprite sprite = textureGetter.apply(self.resolveSprite(modelElementFace.textureId));
+					Sprite sprite = textureGetter.apply(self.resolveSprite(modelElementFace.textureId()));
 
-					if (modelElementFace.cullFace == null) {
-						emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings, id), material, null);
+					if (modelElementFace.cullFace() == null) {
+						emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings), material, null);
 						emitter.emit();
 						continue;
 					}
 
-					emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings, id), material, Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace));
+					emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings), material, Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace()));
 					emitter.emit();
 				}
 
@@ -98,7 +98,7 @@ public abstract class JsonUnbakedModelMixin {
 	}
 
 	@Shadow
-	private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings, Identifier id) {
+	private static BakedQuad createQuad(ModelElement element, ModelElementFace elementFace, Sprite sprite, Direction side, ModelBakeSettings settings) {
 		throw new IllegalStateException();
 	}
 
