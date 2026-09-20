@@ -1,6 +1,8 @@
 package net.darktree.jmxl.mixin;
 
 import com.google.gson.*;
+import com.llamalad7.mixinextras.sugar.Local;
+import net.darktree.jmxl.client.JmxlInitializer;
 import net.darktree.jmxl.client.JmxlModelElement;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.minecraft.client.render.model.json.ModelElement;
@@ -36,18 +38,21 @@ public abstract class ModelElementDeserializerMixin {
 	@Unique
 	private final static Gson GSON = new Gson();
 
-	@Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;", at=@At("TAIL"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<ModelElement> info, JsonObject json, Vector3f from, Vector3f to, ModelRotation rotation, Map<Direction, ModelElementFace> faces, boolean shade) throws JsonParseException {
+	@Inject(method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;", at = @At("TAIL"), cancellable = true)
+	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<ModelElement> info, @Local JsonObject json, @Local(ordinal = 0) Vector3f from, @Local(ordinal = 1) Vector3f to, @Local ModelRotation rotation, @Local Map<Direction, ModelElementFace> faces, @Local boolean shade, @Local int light) throws JsonParseException {
+
+		if (json.has(EMISSIVE)) {
+			JmxlInitializer.LOGGER.error("Emissivity is a vanilla features now, replace boolean 'jmxl_emissive' with integer 'light_emission'!");
+		}
 
 		// technically this check is optional
-		if (json.has(LAYER) || json.has(EMISSIVE) || json.has(DIFFUSE) || json.has(AMBIENT)) {
+		if (json.has(LAYER) || json.has(DIFFUSE) || json.has(AMBIENT)) {
 
 			BlendMode blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlendMode.class) : BlendMode.DEFAULT;
-			boolean emissive = getBoolean(json, EMISSIVE, false);
 			boolean diffuse = getBoolean(json, DIFFUSE, true);
 			boolean ambient = getBoolean(json, AMBIENT, true);
 
-			info.setReturnValue(new JmxlModelElement(from, to, faces, rotation, shade, blend, emissive, diffuse, ambient));
+			info.setReturnValue(new JmxlModelElement(from, to, faces, rotation, shade, light, blend, diffuse, ambient));
 		}
 	}
 

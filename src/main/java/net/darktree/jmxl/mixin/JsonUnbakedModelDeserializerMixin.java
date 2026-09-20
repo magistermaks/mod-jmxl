@@ -4,6 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.datafixers.util.Either;
 import net.darktree.jmxl.client.JmxlModelElement;
 import net.darktree.jmxl.client.JmxlUnbakedModel;
@@ -31,8 +32,12 @@ public abstract class JsonUnbakedModelDeserializerMixin {
 	@Unique
 	private final static String KEY = "jmxl";
 
-	@Inject(method="deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;", at=@At("TAIL"), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<JsonUnbakedModel> info, JsonObject jsonObject, List<ModelElement> elements, String string, Map<String, Either<SpriteIdentifier, String>> sprites, Boolean ao, ModelTransformation transformation, List<ModelOverride> overrides, JsonUnbakedModel.GuiLight light, Identifier identifier) throws JsonParseException {
+	@Inject(
+			method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;",
+			at = @At("TAIL"),
+			cancellable = true
+	)
+	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<JsonUnbakedModel> info, @Local(ordinal = 0) List<ModelElement> elements, @Local Map<String, Either<SpriteIdentifier, String>> sprites, @Local Boolean ao, @Local ModelTransformation transformation, @Local(ordinal = 1) List<ModelOverride> overrides, @Local JsonUnbakedModel.GuiLight light, @Local Identifier identifier) throws JsonParseException {
 		JsonObject object = jsonElement.getAsJsonObject();
 
 		if (object.has(KEY) && object.get(KEY).getAsBoolean()) {

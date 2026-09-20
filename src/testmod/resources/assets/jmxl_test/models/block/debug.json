@@ -39,7 +39,7 @@
       "from": [ 4, 4, 4 ],
       "to": [ 12, 12, 12 ],
       "jmxl_layer": "TRANSLUCENT",
-      "jmxl_emissive": true,
+      "light_emission": 15,
       "jmxl_diffuse": false,
       "jmxl_ambient_occlusion": false,
       "faces": {

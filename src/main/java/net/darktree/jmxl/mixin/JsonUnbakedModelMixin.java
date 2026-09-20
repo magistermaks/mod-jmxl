@@ -1,5 +1,6 @@
 package net.darktree.jmxl.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import net.darktree.jmxl.client.JmxlBakedModel;
 import net.darktree.jmxl.client.JmxlModelElement;
 import net.darktree.jmxl.client.JmxlUnbakedModel;
@@ -10,11 +11,9 @@ import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.render.model.*;
-import net.minecraft.client.render.model.json.JsonUnbakedModel;
-import net.minecraft.client.render.model.json.ModelElement;
-import net.minecraft.client.render.model.json.ModelElementFace;
-import net.minecraft.client.render.model.json.ModelOverrideList;
+import net.minecraft.client.render.model.json.*;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.Identifier;
@@ -28,12 +27,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
 @Mixin(JsonUnbakedModel.class)
 public abstract class JsonUnbakedModelMixin {
+
+	@Shadow
+	public abstract List<ModelOverride> getOverrides();
 
 	@Unique
 	private final static Renderer RENDERER;
@@ -54,12 +57,23 @@ public abstract class JsonUnbakedModelMixin {
 		DEFAULT = FINDER.find();
 	}
 
+	@Unique
 	private static RenderMaterial getMaterial(ModelElement element) {
-		return (element instanceof JmxlModelElement jmxl) ? FINDER.blendMode(0, jmxl.layer).emissive(0, jmxl.emissive).disableDiffuse(0, jmxl.no_diffuse).disableAo(0, jmxl.no_ambient).find() : DEFAULT;
+		return (element instanceof JmxlModelElement jmxl) ? FINDER.blendMode(jmxl.layer).disableDiffuse(jmxl.no_diffuse).ambientOcclusion(jmxl.no_ambient ? TriState.FALSE : TriState.TRUE).find() : DEFAULT;
 	}
 
-	@Inject(method="bake(Lnet/minecraft/client/render/model/Baker;Lnet/minecraft/client/render/model/json/JsonUnbakedModel;Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Z)Lnet/minecraft/client/render/model/BakedModel;", at=@At(value="INVOKE", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0, shift=At.Shift.BY, by=3), cancellable=true, locals=LocalCapture.CAPTURE_FAILHARD)
-	public void bake(Baker baker, JsonUnbakedModel parent, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings settings, boolean hasDepth, CallbackInfoReturnable<BakedModel> info, Sprite particle) {
+	@Inject(
+			method="bake(Ljava/util/function/Function;Lnet/minecraft/client/render/model/ModelBakeSettings;Z)Lnet/minecraft/client/render/model/BakedModel;",
+			at=@At(
+					value= "INVOKE_ASSIGN",
+					target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;",
+					ordinal = 0,
+					shift = At.Shift.BY,
+					by = 3
+			),
+			cancellable=true
+	)
+	public void bake(Function<SpriteIdentifier, Sprite> getter, ModelBakeSettings settings, boolean depth, CallbackInfoReturnable<BakedModel> cir, @Local Sprite particle) {
 
 		// TODO: Change the cursed at to '@At(value="INVOKE_ASSIGN", target="Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;", ordinal=0)'
 		// TODO: once a issue in mixin is fixed (https://github.com/SpongePowered/Mixin/pull/514), current workaround by LlamaLad7.
@@ -73,28 +87,23 @@ public abstract class JsonUnbakedModelMixin {
 				RenderMaterial material = getMaterial(element);
 
 				for (Direction direction : element.faces.keySet()) {
-					ModelElementFace modelElementFace = element.faces.get(direction);
-					Sprite sprite = textureGetter.apply(self.resolveSprite(modelElementFace.textureId()));
+					ModelElementFace face = element.faces.get(direction);
+					Sprite sprite = getter.apply(self.resolveSprite(face.textureId()));
 
-					if (modelElementFace.cullFace() == null) {
-						emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings), material, null);
+					if (face.cullFace() == null) {
+						emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, face, sprite, direction, settings), material, null);
 						emitter.emit();
 						continue;
 					}
 
-					emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, modelElementFace, sprite, direction, settings), material, Direction.transform(settings.getRotation().getMatrix(), modelElementFace.cullFace()));
+					emitter.fromVanilla(JsonUnbakedModelMixin.createQuad(element, face, sprite, direction, settings), material, Direction.transform(settings.getRotation().getMatrix(), face.cullFace()));
 					emitter.emit();
 				}
 
 			}
 
-			info.setReturnValue(new JmxlBakedModel(particle, MESH.build(), self.getTransformations(), this.compileOverrides(baker, parent), hasDepth, self.getGuiLight().isSide(), self.useAmbientOcclusion()));
+			cir.setReturnValue(new JmxlBakedModel(particle, MESH.build(), self.getTransformations(), depth, self.getGuiLight().isSide(), self.useAmbientOcclusion()));
 		}
-	}
-
-	@Shadow
-	private ModelOverrideList compileOverrides(Baker baker, JsonUnbakedModel parent) {
-		throw new IllegalStateException();
 	}
 
 	@Shadow

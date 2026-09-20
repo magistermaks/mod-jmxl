@@ -25,18 +25,16 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 	final private Sprite sprite;
 	final private Mesh mesh;
 	final private ModelTransformation transformation;
-	final private ModelOverrideList overrides;
 	final private boolean hasDepth;
 	final private boolean isSideLit;
 	final private boolean usesAo;
 	private List<BakedQuad>[] cache = null;
 
-	public JmxlBakedModel(Sprite sprite, Mesh mesh, ModelTransformation transformation, ModelOverrideList overrides, boolean hasDepth, boolean isSideLit, boolean usesAo) {
+	public JmxlBakedModel(Sprite sprite, Mesh mesh, ModelTransformation transformation, boolean hasDepth, boolean isSideLit, boolean usesAo) {
 		// called from Unbaked Model
 		this.sprite = sprite;
 		this.mesh = mesh;
 		this.transformation = transformation;
-		this.overrides = overrides;
 		this.hasDepth = hasDepth;
 		this.isSideLit = isSideLit;
 		this.usesAo = usesAo;
@@ -45,6 +43,7 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 	/*
 	 * methods inherited from FabricBakedModel
 	 */
+	@Override
 	public boolean isVanillaAdapter() {
 		return false;
 	}
@@ -75,10 +74,12 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 		return cache[face.getId()];
 	}
 
+	@Override
 	public boolean useAmbientOcclusion() {
 		return usesAo;
 	}
 
+	@Override
 	public boolean isBuiltin() {
 		return false;
 	}
@@ -98,12 +99,9 @@ public class JmxlBakedModel implements BakedModel, FabricBakedModel {
 		return isSideLit;
 	}
 
+	@Override
 	public ModelTransformation getTransformation() {
 		return transformation;
-	}
-
-	public ModelOverrideList getOverrides() {
-		return overrides;
 	}
 
 }

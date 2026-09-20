@@ -28,8 +28,8 @@
     }
   },
   "depends": {
-    "fabricloader": "*",
+    "fabricloader": ">=0.15.11",
     "fabric": "*",
-    "minecraft": ["1.21.0", "1.21.1"]
+    "minecraft": ["1.21.2", "1.21.3"]
   }
 }
