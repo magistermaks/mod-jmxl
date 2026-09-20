@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 @Environment(EnvType.CLIENT)
 public class JmxlInitializer implements ClientModInitializer {
 
+	public static final ThreadLocal<Boolean> IS_JMXL = ThreadLocal.withInitial(() -> false);
+
 	public static final Logger LOGGER = LoggerFactory.getLogger("JMXL");
 
 	@Override
