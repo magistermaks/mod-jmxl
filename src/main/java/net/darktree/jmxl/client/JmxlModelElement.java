@@ -13,14 +13,12 @@ import java.util.Map;
 public class JmxlModelElement extends ModelElement {
 
 	public final BlendMode layer;
-	public final boolean emissive;
 	public final boolean no_diffuse;
 	public final boolean no_ambient;
 
-	public JmxlModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade, BlendMode layer, boolean emissive, boolean diffuse, boolean ambient) {
-		super(from, to, faces, rotation, shade);
+	public JmxlModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade, int light, BlendMode layer, boolean diffuse, boolean ambient) {
+		super(from, to, faces, rotation, shade, light);
 		this.layer = layer;
-		this.emissive = emissive;
 		this.no_diffuse = !diffuse;
 		this.no_ambient = !ambient;
 	}
