@@ -17,9 +17,8 @@ public abstract class JsonUnbakedModelMixin {
 			at = @At("HEAD")
 	)
 	public void bake(ModelTextures textures, Baker baker, ModelBakeSettings settings, boolean ambientOcclusion, boolean isSideLit, ModelTransformation transformation, CallbackInfoReturnable<BakedModel> cir) {
-		if ((Object) this instanceof JmxlUnbakedModel jmxl) {
+		if ((Object) this instanceof JmxlUnbakedModel) {
 			JmxlInitializer.IS_JMXL.set(true);
-			JmxlInitializer.LOGGER.info("Found JMXL model!");
 		}
 	}
 

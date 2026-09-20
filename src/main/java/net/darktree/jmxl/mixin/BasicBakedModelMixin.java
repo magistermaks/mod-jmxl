@@ -77,15 +77,11 @@ public class BasicBakedModelMixin {
 		if (JmxlInitializer.IS_JMXL.get()) {
 			JmxlInitializer.IS_JMXL.set(false);
 
-			JmxlInitializer.LOGGER.info("Processing JMXL model!");
-
 			MutableMesh mesh = getMesh();
 			QuadEmitter emitter = mesh.emitter();
 
 			for (ModelElement element : elements) {
 				RenderMaterial material = getMaterial(element);
-
-				JmxlInitializer.LOGGER.info("Using: {}!", material);
 
 				for (Direction direction : element.faces.keySet()) {
 					ModelElementFace face = element.faces.get(direction);
@@ -93,6 +89,7 @@ public class BasicBakedModelMixin {
 
 					if (face.cullFace() == null) {
 						emitter.fromVanilla(bake(element, face, sprite, direction, settings), material, null);
+						emitter.emit();
 						continue;
 					}
 
