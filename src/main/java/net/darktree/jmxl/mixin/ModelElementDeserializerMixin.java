@@ -12,9 +12,10 @@ import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
-import net.minecraft.client.render.model.json.ModelRotation;
+import net.minecraft.client.render.model.json.ModelElementRotation;
 import net.minecraft.util.math.Direction;
 import org.joml.Vector3fc;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,7 +47,7 @@ public abstract class ModelElementDeserializerMixin {
 					args = "class=net/minecraft/client/render/model/json/ModelElement"
 			)
 	)
-	public ModelElement deserialize(Vector3fc from, Vector3fc to, Map<Direction, ModelElementFace> faces, ModelRotation rotation, boolean shade, int light, Operation<ModelElement> original, @Local(ordinal = 0) JsonObject json) throws JsonParseException {
+	public ModelElement deserialize(Vector3fc from, Vector3fc to, Map<Direction, ModelElementFace> faces, @Nullable ModelElementRotation rotation, boolean shade, int light, Operation<ModelElement> original, @Local(ordinal = 0) JsonObject json) throws JsonParseException {
 		ModelElement element = original.call(from, to, faces, rotation, shade, light);
 
 		if (json.has(EMISSIVE)) {

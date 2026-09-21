@@ -34,11 +34,6 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 	@Unique
 	private boolean jmxl = false;
 
-	@Shadow
-	private static BakedQuad bakeQuad(ModelElement element, ModelElementFace face, Sprite sprite, Direction facing, ModelBakeSettings settings) {
-		throw new UnsupportedOperationException();
-	}
-
 	@Unique
 	private static MutableMesh getMesh() {
 		return Objects.requireNonNull(RENDERER).mutableMesh();
@@ -78,7 +73,7 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 			cancellable = true,
 			at = @At("HEAD")
 	)
-	private static void onBakeGeometry(List<ModelElement> elements, ModelTextures textures, ErrorCollectingSpriteGetter sprites, ModelBakeSettings settings, SimpleModel model, CallbackInfoReturnable<BakedGeometry> cir) {
+	private static void onBakeGeometry(List<ModelElement> elements, ModelTextures textures, Baker baker, ModelBakeSettings settings, SimpleModel model, CallbackInfoReturnable<BakedGeometry> cir) {
 		if (JMXL.get()) {
 			JMXL.set(false);
 
@@ -87,15 +82,28 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 
 			for (ModelElement element : elements) {
 				element.faces().forEach((direction, face) -> {
-					Sprite sprite = sprites.get(textures, face.textureId(), model);
+					Sprite sprite = baker.getSpriteGetter().get(textures, face.textureId(), model);
+
+					BakedQuad quad = BakedQuadFactory.bake(
+							baker.getVec3fInterner(),
+							element.from(),
+							element.to(),
+							face,
+							sprite,
+							direction,
+							settings,
+							element.rotation(),
+							element.shade(),
+							element.lightEmission()
+					);
 
 					if (face.cullFace() == null) {
-						emitQuad(emitter, bakeQuad(element, face, sprite, direction, settings), element, null);
+						emitQuad(emitter, quad, element, null);
 						return;
 					}
 
 					Direction facing = Direction.transform(settings.getRotation().getMatrix(), face.cullFace());
-					emitQuad(emitter, bakeQuad(element, face, sprite, direction, settings), element, facing);
+					emitQuad(emitter, quad, element, facing);
 				});
 
 			}

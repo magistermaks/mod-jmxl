@@ -42,9 +42,6 @@ processResources {
 }
 
 java {
-	archivesBaseName = project.archives_base_name
-	withSourcesJar()
-
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(21))
 	}
