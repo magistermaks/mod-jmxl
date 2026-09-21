@@ -1,8 +1,8 @@
 package net.darktree.jmxl.mixin;
 
 import net.darktree.jmxl.duck.JmxlElement;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.client.render.model.json.ModelElement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Unique;
 public class ModelElementMixin implements JmxlElement {
 
 	@Unique
-	BlendMode mode = BlendMode.DEFAULT;
+	BlockRenderLayer layer = BlockRenderLayer.SOLID;
 
 	@Unique
 	boolean diffuse = true;
@@ -20,13 +20,13 @@ public class ModelElementMixin implements JmxlElement {
 	TriState ao = TriState.DEFAULT;
 
 	@Override
-	public void jmxl_setBlendMode(BlendMode mode) {
-		this.mode = mode;
+	public void jmxl_setRenderLayer(BlockRenderLayer mode) {
+		this.layer = mode;
 	}
 
 	@Override
-	public BlendMode jmxl_getBlendMode() {
-		return mode;
+	public BlockRenderLayer jmxl_getRenderLayer() {
+		return layer;
 	}
 
 	@Override

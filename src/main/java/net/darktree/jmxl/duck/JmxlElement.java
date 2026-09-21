@@ -1,11 +1,11 @@
 package net.darktree.jmxl.duck;
 
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.render.BlockRenderLayer;
 
 public interface JmxlElement {
-	void jmxl_setBlendMode(BlendMode mode);
-	BlendMode jmxl_getBlendMode();
+	void jmxl_setRenderLayer(BlockRenderLayer layer);
+	BlockRenderLayer jmxl_getRenderLayer();
 	void jmxl_setDiffuse(boolean diffuse);
 	boolean jmxl_getDiffuse();
 	void jmxl_setAmbientOcclusion(TriState ao);

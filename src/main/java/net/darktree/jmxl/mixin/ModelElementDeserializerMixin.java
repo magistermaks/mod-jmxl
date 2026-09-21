@@ -8,8 +8,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.darktree.jmxl.client.JmxlInitializer;
 import net.darktree.jmxl.duck.JmxlElement;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
 import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelRotation;
@@ -56,11 +56,11 @@ public abstract class ModelElementDeserializerMixin {
 		// technically this check is optional
 		if (json.has(LAYER) || json.has(DIFFUSE) || json.has(AMBIENT)) {
 
-			BlendMode blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlendMode.class) : BlendMode.DEFAULT;
+			BlockRenderLayer blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlockRenderLayer.class) : BlockRenderLayer.SOLID;
 			boolean diffuse = getBoolean(json, DIFFUSE, false);
 
 			JmxlElement jmxl = ((JmxlElement) (Object) element);
-			jmxl.jmxl_setBlendMode(blend);
+			jmxl.jmxl_setRenderLayer(blend);
 			jmxl.jmxl_setDiffuse(diffuse);
 
 			if (json.has(AMBIENT)) {

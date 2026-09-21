@@ -3,8 +3,6 @@ package net.darktree.jmxl.mixin;
 import net.darktree.jmxl.duck.JmxlElement;
 import net.darktree.jmxl.duck.JmxlGeometry;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
-import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
-import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableMesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.MeshBakedGeometry;
@@ -13,6 +11,7 @@ import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.math.Direction;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -30,19 +29,7 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 	private static final ThreadLocal<Boolean> JMXL = ThreadLocal.withInitial(() -> false);
 
 	@Unique
-	private final static Renderer RENDERER;
-
-	@Unique
-	private final static MaterialFinder FINDER;
-
-	@Unique
-	private final static RenderMaterial DEFAULT;
-
-	static {
-		RENDERER = Renderer.get();
-		FINDER = RENDERER.materialFinder();
-		DEFAULT = FINDER.find();
-	}
+	private final static Renderer RENDERER = Objects.requireNonNull(Renderer.get(), "Fabric rendering API not loaded!");
 
 	@Unique
 	private boolean jmxl = false;
@@ -62,19 +49,6 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 		jmxl = true;
 	}
 
-	@Unique
-	private static RenderMaterial getMaterial(Object element) {
-		if (element instanceof JmxlElement jmxl) {
-			return FINDER
-					.blendMode(jmxl.jmxl_getBlendMode())
-					.disableDiffuse(!jmxl.jmxl_getDiffuse())
-					.ambientOcclusion(jmxl.jmxl_getAmbientOcclusion())
-					.find();
-		}
-
-		return DEFAULT;
-	}
-
 	@Inject(
 			method = "bake",
 			at = @At("HEAD")
@@ -83,6 +57,20 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 		if (jmxl) {
 			JMXL.set(true);
 		}
+	}
+
+	@Unique
+	private static void emitQuad(QuadEmitter emitter, BakedQuad quad, Object element, @Nullable Direction face) {
+		emitter.nominalFace(face);
+
+		if (element instanceof JmxlElement jmxl) {
+			emitter.renderLayer(jmxl.jmxl_getRenderLayer());
+			emitter.ambientOcclusion(jmxl.jmxl_getAmbientOcclusion());
+			emitter.diffuseShade(jmxl.jmxl_getDiffuse());
+		}
+
+		emitter.fromBakedQuad(quad);
+		emitter.emit();
 	}
 
 	@Inject(
@@ -98,19 +86,16 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 			QuadEmitter emitter = mesh.emitter();
 
 			for (ModelElement element : elements) {
-				RenderMaterial material = getMaterial(element);
-
 				element.faces().forEach((direction, face) -> {
 					Sprite sprite = sprites.get(textures, face.textureId(), model);
 
 					if (face.cullFace() == null) {
-						emitter.fromVanilla(bakeQuad(element, face, sprite, direction, settings), material, null);
-						emitter.emit();
+						emitQuad(emitter, bakeQuad(element, face, sprite, direction, settings), element, null);
 						return;
 					}
 
-					emitter.fromVanilla(bakeQuad(element, face, sprite, direction, settings), material, Direction.transform(settings.getRotation().getMatrix(), face.cullFace()));
-					emitter.emit();
+					Direction facing = Direction.transform(settings.getRotation().getMatrix(), face.cullFace());
+					emitQuad(emitter, bakeQuad(element, face, sprite, direction, settings), element, facing);
 				});
 
 			}
