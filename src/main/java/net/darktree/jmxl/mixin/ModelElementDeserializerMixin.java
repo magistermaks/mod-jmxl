@@ -1,23 +1,24 @@
 package net.darktree.jmxl.mixin;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.darktree.jmxl.client.JmxlInitializer;
-import net.darktree.jmxl.client.JmxlModelElement;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.darktree.jmxl.duck.JmxlElement;
+import net.fabricmc.fabric.api.util.TriState;
+import net.minecraft.client.render.BlockRenderLayer;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelRotation;
 import net.minecraft.util.math.Direction;
-import org.joml.Vector3f;
+import org.joml.Vector3fc;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 
 @Mixin(targets={"net.minecraft.client.render.model.json.ModelElement$Deserializer"})
@@ -38,8 +39,15 @@ public abstract class ModelElementDeserializerMixin {
 	@Unique
 	private final static Gson GSON = new Gson();
 
-	@Inject(method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;", at = @At("TAIL"), cancellable = true)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<ModelElement> info, @Local JsonObject json, @Local(ordinal = 0) Vector3f from, @Local(ordinal = 1) Vector3f to, @Local ModelRotation rotation, @Local Map<Direction, ModelElementFace> faces, @Local boolean shade, @Local int light) throws JsonParseException {
+	@WrapOperation(
+			method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/ModelElement;",
+			at = @At(
+					value = "NEW",
+					args = "class=net/minecraft/client/render/model/json/ModelElement"
+			)
+	)
+	public ModelElement deserialize(Vector3fc from, Vector3fc to, Map<Direction, ModelElementFace> faces, ModelRotation rotation, boolean shade, int light, Operation<ModelElement> original, @Local(ordinal = 0) JsonObject json) throws JsonParseException {
+		ModelElement element = original.call(from, to, faces, rotation, shade, light);
 
 		if (json.has(EMISSIVE)) {
 			JmxlInitializer.LOGGER.error("Emissivity is a vanilla features now, replace boolean 'jmxl_emissive' with integer 'light_emission'!");
@@ -48,12 +56,20 @@ public abstract class ModelElementDeserializerMixin {
 		// technically this check is optional
 		if (json.has(LAYER) || json.has(DIFFUSE) || json.has(AMBIENT)) {
 
-			BlendMode blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlendMode.class) : BlendMode.DEFAULT;
-			boolean diffuse = getBoolean(json, DIFFUSE, true);
-			boolean ambient = getBoolean(json, AMBIENT, true);
+			BlockRenderLayer blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlockRenderLayer.class) : BlockRenderLayer.SOLID;
+			boolean diffuse = getBoolean(json, DIFFUSE, false);
 
-			info.setReturnValue(new JmxlModelElement(from, to, faces, rotation, shade, light, blend, diffuse, ambient));
+			JmxlElement jmxl = ((JmxlElement) (Object) element);
+			jmxl.jmxl_setRenderLayer(blend);
+			jmxl.jmxl_setDiffuse(diffuse);
+
+			if (json.has(AMBIENT)) {
+				jmxl.jmxl_setAmbientOcclusion(TriState.of(json.get(AMBIENT).getAsBoolean()));
+			}
+
 		}
+
+		return element;
 	}
 
 	@Unique

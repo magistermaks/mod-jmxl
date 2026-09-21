@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.7-SNAPSHOT'
+	id 'fabric-loom' version "${loom_version}"
 }
 
 version = project.mod_version + "+mc" + project.minecraft_version
@@ -9,13 +9,6 @@ sourceSets {
 	testmod {
 		compileClasspath += main.compileClasspath
 		runtimeClasspath += main.runtimeClasspath
-	}
-}
-
-repositories {
-	maven {
-		name = 'TerraformersMC'
-		url = 'https://maven.terraformersmc.com/'
 	}
 }
 
@@ -37,7 +30,6 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
-	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 processResources {

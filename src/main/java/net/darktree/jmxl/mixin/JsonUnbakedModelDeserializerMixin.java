@@ -1,30 +1,19 @@
 package net.darktree.jmxl.mixin;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.datafixers.util.Either;
-import net.darktree.jmxl.client.JmxlModelElement;
-import net.darktree.jmxl.client.JmxlUnbakedModel;
-import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.darktree.jmxl.duck.JmxlGeometry;
+import net.minecraft.client.render.model.UnbakedGeometry;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelElement;
-import net.minecraft.client.render.model.json.ModelOverride;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 
 @Mixin(JsonUnbakedModel.Deserializer.class)
 public abstract class JsonUnbakedModelDeserializerMixin {
@@ -32,17 +21,21 @@ public abstract class JsonUnbakedModelDeserializerMixin {
 	@Unique
 	private final static String KEY = "jmxl";
 
-	@Inject(
-			method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/render/model/json/JsonUnbakedModel;",
-			at = @At("TAIL"),
-			cancellable = true
+	@WrapOperation(
+			method = "elementsFromJson",
+			at = @At(
+					value = "NEW",
+					args = "class=net/minecraft/client/render/model/UnbakedGeometry"
+			)
 	)
-	public void deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext, CallbackInfoReturnable<JsonUnbakedModel> info, @Local(ordinal = 0) List<ModelElement> elements, @Local Map<String, Either<SpriteIdentifier, String>> sprites, @Local Boolean ao, @Local ModelTransformation transformation, @Local(ordinal = 1) List<ModelOverride> overrides, @Local JsonUnbakedModel.GuiLight light, @Local Identifier identifier) throws JsonParseException {
-		JsonObject object = jsonElement.getAsJsonObject();
+	public UnbakedGeometry deserialize(List<ModelElement> list, Operation<UnbakedGeometry> original, @Local(argsOnly = true) JsonObject json) throws JsonParseException {
+		UnbakedGeometry geometry = original.call(list);
 
-		if (object.has(KEY) && object.get(KEY).getAsBoolean()) {
-			info.setReturnValue(new JmxlUnbakedModel(identifier, elements, sprites, ao, light, transformation, overrides));
+		if (json.has(KEY) && json.get(KEY).getAsBoolean()) {
+			((JmxlGeometry) (Object) geometry).jmxl_markJmxl();
 		}
+
+		return geometry;
 	}
 
 }
