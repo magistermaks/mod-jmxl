@@ -2,16 +2,16 @@ package net.darktree.jmxl.mixin;
 
 import net.darktree.jmxl.duck.JmxlElement;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.render.BlockRenderLayer;
-import net.minecraft.client.render.model.json.ModelElement;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(ModelElement.class)
+@Mixin(BlockElement.class)
 public class ModelElementMixin implements JmxlElement {
 
 	@Unique
-	BlockRenderLayer layer = BlockRenderLayer.SOLID;
+	ChunkSectionLayer layer = ChunkSectionLayer.SOLID;
 
 	@Unique
 	boolean diffuse = true;
@@ -20,12 +20,12 @@ public class ModelElementMixin implements JmxlElement {
 	TriState ao = TriState.DEFAULT;
 
 	@Override
-	public void jmxl_setRenderLayer(BlockRenderLayer mode) {
+	public void jmxl_setRenderLayer(ChunkSectionLayer mode) {
 		this.layer = mode;
 	}
 
 	@Override
-	public BlockRenderLayer jmxl_getRenderLayer() {
+	public ChunkSectionLayer jmxl_getRenderLayer() {
 		return layer;
 	}
 

@@ -2,45 +2,45 @@ package net.darktree.test;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.MapColor;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.MapColor;
 
 public class Test implements ModInitializer {
 
-	private final static Identifier ID = Identifier.of("jmxl_test", "debug");
+	private final static Identifier ID = Identifier.fromNamespaceAndPath("jmxl_test", "debug");
 
-	private final static AbstractBlock.Settings BLOCK_SETTINGS = AbstractBlock.Settings.create()
-			.registryKey(RegistryKey.of(RegistryKeys.BLOCK, ID))
-			.solid()
-			.mapColor(MapColor.BROWN)
-			.nonOpaque()
+	private final static BlockBehaviour.Properties BLOCK_SETTINGS = BlockBehaviour.Properties.of()
+			.setId(ResourceKey.create(Registries.BLOCK, ID))
+			.forceSolidOn()
+			.mapColor(MapColor.COLOR_BROWN)
+			.noOcclusion()
 			.strength(0.3F)
-			.sounds(BlockSoundGroup.GLASS);
+			.sound(SoundType.GLASS);
 
-	private final static Item.Settings ITEM_SETTINGS = new Item.Settings()
-			.registryKey(RegistryKey.of(RegistryKeys.ITEM, ID))
-			.useBlockPrefixedTranslationKey();
+	private final static Item.Properties ITEM_SETTINGS = new Item.Properties()
+			.setId(ResourceKey.create(Registries.ITEM, ID))
+			.useBlockDescriptionPrefix();
 
 	private final static Block TEST_BLOCK = new Block(BLOCK_SETTINGS);
 	private final static Item TEST_ITEM = new BlockItem(TEST_BLOCK, ITEM_SETTINGS);
 
 	@Override
 	public void onInitialize() {
-		Registry.register(Registries.BLOCK, ID, TEST_BLOCK);
-		Registry.register(Registries.ITEM, ID, TEST_ITEM);
+		Registry.register(BuiltInRegistries.BLOCK, ID, TEST_BLOCK);
+		Registry.register(BuiltInRegistries.ITEM, ID, TEST_ITEM);
 
-		ItemGroupEvents.modifyEntriesEvent(ItemGroups.BUILDING_BLOCKS).register(content -> {
-			content.add(TEST_ITEM);
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS).register(content -> {
+			content.accept(TEST_ITEM);
 		});
 	}
 

@@ -6,14 +6,19 @@ import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableMesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.MeshBakedGeometry;
-import net.minecraft.client.render.model.*;
-import net.minecraft.client.render.model.json.ModelElement;
-import net.minecraft.client.render.model.json.ModelElementFace;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.math.Direction;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.BlockElement;
+import net.minecraft.client.renderer.block.model.FaceBakery;
+import net.minecraft.client.renderer.block.model.SimpleUnbakedGeometry;
+import net.minecraft.client.renderer.block.model.TextureSlots;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelDebugName;
+import net.minecraft.client.resources.model.ModelState;
+import net.minecraft.client.resources.model.QuadCollection;
+import net.minecraft.core.Direction;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -22,7 +27,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 import java.util.Objects;
 
-@Mixin(UnbakedGeometry.class)
+@Mixin(SimpleUnbakedGeometry.class)
 public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 
 	@Unique
@@ -45,10 +50,10 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 	}
 
 	@Inject(
-			method = "bake",
+			method = "bake(Lnet/minecraft/client/renderer/block/model/TextureSlots;Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/resources/model/ModelState;Lnet/minecraft/client/resources/model/ModelDebugName;)Lnet/minecraft/client/resources/model/QuadCollection;",
 			at = @At("HEAD")
 	)
-	void onModelBake(ModelTextures textures, Baker baker, ModelBakeSettings settings, SimpleModel simpleModel, CallbackInfoReturnable<BakedGeometry> cir) {
+	void onModelBake(TextureSlots textures, ModelBaker baker, ModelState settings, ModelDebugName simpleModel, CallbackInfoReturnable<QuadCollection> cir) {
 		if (jmxl) {
 			JMXL.set(true);
 		}
@@ -69,23 +74,23 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 	}
 
 	@Inject(
-			method = "bakeGeometry",
+			method = "bake(Ljava/util/List;Lnet/minecraft/client/renderer/block/model/TextureSlots;Lnet/minecraft/client/resources/model/ModelBaker;Lnet/minecraft/client/resources/model/ModelState;Lnet/minecraft/client/resources/model/ModelDebugName;)Lnet/minecraft/client/resources/model/QuadCollection;",
 			cancellable = true,
 			at = @At("HEAD")
 	)
-	private static void onBakeGeometry(List<ModelElement> elements, ModelTextures textures, Baker baker, ModelBakeSettings settings, SimpleModel model, CallbackInfoReturnable<BakedGeometry> cir) {
+	private static void onBakeGeometry(List<BlockElement> elements, TextureSlots textures, ModelBaker baker, ModelState settings, ModelDebugName model, CallbackInfoReturnable<QuadCollection> cir) {
 		if (JMXL.get()) {
 			JMXL.set(false);
 
 			MutableMesh mesh = getMesh();
 			QuadEmitter emitter = mesh.emitter();
 
-			for (ModelElement element : elements) {
+			for (BlockElement element : elements) {
 				element.faces().forEach((direction, face) -> {
-					Sprite sprite = baker.getSpriteGetter().get(textures, face.textureId(), model);
+					TextureAtlasSprite sprite = baker.sprites().resolveSlot(textures, face.texture(), model);
 
-					BakedQuad quad = BakedQuadFactory.bake(
-							baker.getVec3fInterner(),
+					BakedQuad quad = FaceBakery.bakeQuad(
+							baker.parts(),
 							element.from(),
 							element.to(),
 							face,
@@ -97,12 +102,12 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 							element.lightEmission()
 					);
 
-					if (face.cullFace() == null) {
+					if (face.cullForDirection() == null) {
 						emitQuad(emitter, quad, element, null);
 						return;
 					}
 
-					Direction facing = Direction.transform(settings.getRotation().getMatrix(), face.cullFace());
+					Direction facing = Direction.rotate(settings.transformation().getMatrix(), face.cullForDirection());
 					emitQuad(emitter, quad, element, facing);
 				});
 
