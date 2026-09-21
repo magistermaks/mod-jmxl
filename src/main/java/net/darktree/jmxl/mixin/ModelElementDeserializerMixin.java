@@ -1,12 +1,15 @@
 package net.darktree.jmxl.mixin;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.darktree.jmxl.client.JmxlInitializer;
 import net.darktree.jmxl.duck.JmxlElement;
 import net.fabricmc.fabric.api.renderer.v1.material.BlendMode;
+import net.fabricmc.fabric.api.util.TriState;
 import net.minecraft.client.render.model.json.ModelElement;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelRotation;
@@ -54,11 +57,16 @@ public abstract class ModelElementDeserializerMixin {
 		if (json.has(LAYER) || json.has(DIFFUSE) || json.has(AMBIENT)) {
 
 			BlendMode blend = json.has(LAYER) ? GSON.fromJson(json.get(LAYER), BlendMode.class) : BlendMode.DEFAULT;
-			boolean diffuse = getBoolean(json, DIFFUSE, true); // TODO
-			boolean ambient = getBoolean(json, AMBIENT, true); // TODO
+			boolean diffuse = getBoolean(json, DIFFUSE, false);
 
 			JmxlElement jmxl = ((JmxlElement) (Object) element);
 			jmxl.jmxl_setBlendMode(blend);
+			jmxl.jmxl_setDiffuse(diffuse);
+
+			if (json.has(AMBIENT)) {
+				jmxl.jmxl_setAmbientOcclusion(TriState.of(json.get(AMBIENT).getAsBoolean()));
+			}
+
 		}
 
 		return element;

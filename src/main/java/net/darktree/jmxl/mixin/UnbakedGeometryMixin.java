@@ -67,8 +67,8 @@ public abstract class UnbakedGeometryMixin implements JmxlGeometry {
 		if (element instanceof JmxlElement jmxl) {
 			return FINDER
 					.blendMode(jmxl.jmxl_getBlendMode())
-//					.disableDiffuse(jmxl.no_diffuse)
-//					.ambientOcclusion(jmxl.no_ambient ? TriState.FALSE : TriState.TRUE)
+					.disableDiffuse(!jmxl.jmxl_getDiffuse())
+					.ambientOcclusion(jmxl.jmxl_getAmbientOcclusion())
 					.find();
 		}
 
