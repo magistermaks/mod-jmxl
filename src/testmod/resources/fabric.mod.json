@@ -15,7 +15,7 @@
   },
   "depends": {
     "fabricloader": "*",
-    "fabric": "*",
+    "fabric-api": "*",
     "jmxl": "*",
     "minecraft": "*"
   }

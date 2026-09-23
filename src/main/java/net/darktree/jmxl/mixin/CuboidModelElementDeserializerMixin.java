@@ -1,6 +1,7 @@
 package net.darktree.jmxl.mixin;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -9,10 +10,10 @@ import com.llamalad7.mixinextras.sugar.Local;
 import net.darktree.jmxl.client.JmxlInitializer;
 import net.darktree.jmxl.duck.JmxlElement;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.renderer.block.model.BlockElement;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.BlockElementRotation;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
+import net.minecraft.client.resources.model.cuboid.CuboidRotation;
 import net.minecraft.core.Direction;
 import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
@@ -22,8 +23,8 @@ import org.spongepowered.asm.mixin.injection.At;
 
 import java.util.Map;
 
-@Mixin(targets={"net.minecraft.client.renderer.block.model.BlockElement$Deserializer"})
-public abstract class ModelElementDeserializerMixin {
+@Mixin(targets = "net.minecraft.client.resources.model.cuboid.CuboidModelElement$Deserializer")
+public class CuboidModelElementDeserializerMixin {
 
 	@Unique
 	private final static String LAYER = "jmxl_layer";
@@ -41,14 +42,14 @@ public abstract class ModelElementDeserializerMixin {
 	private final static Gson GSON = new Gson();
 
 	@WrapOperation(
-			method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/renderer/block/model/BlockElement;",
+			method = "deserialize(Lcom/google/gson/JsonElement;Ljava/lang/reflect/Type;Lcom/google/gson/JsonDeserializationContext;)Lnet/minecraft/client/resources/model/cuboid/CuboidModelElement;",
 			at = @At(
 					value = "NEW",
-					args = "class=net/minecraft/client/renderer/block/model/BlockElement"
+					args = "class=net/minecraft/client/resources/model/cuboid/CuboidModelElement"
 			)
 	)
-	public BlockElement deserialize(Vector3fc from, Vector3fc to, Map<Direction, BlockElementFace> faces, @Nullable BlockElementRotation rotation, boolean shade, int light, Operation<BlockElement> original, @Local(ordinal = 0) JsonObject json) throws JsonParseException {
-		BlockElement element = original.call(from, to, faces, rotation, shade, light);
+	public CuboidModelElement onNewElement(Vector3fc from, Vector3fc to, Map<Direction, CuboidFace> faces, CuboidRotation rotation, boolean shade, int emission, Operation<CuboidModelElement> original, @Local(ordinal = 0) JsonObject json) throws JsonParseException {
+		CuboidModelElement element = original.call(from, to, faces, rotation, shade, emission);
 
 		if (json.has(EMISSIVE)) {
 			JmxlInitializer.LOGGER.error("Emissivity is a vanilla features now, replace boolean 'jmxl_emissive' with integer 'light_emission'!");

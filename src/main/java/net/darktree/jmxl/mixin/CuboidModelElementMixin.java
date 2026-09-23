@@ -2,13 +2,13 @@ package net.darktree.jmxl.mixin;
 
 import net.darktree.jmxl.duck.JmxlElement;
 import net.fabricmc.fabric.api.util.TriState;
-import net.minecraft.client.renderer.block.model.BlockElement;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
+import net.minecraft.client.resources.model.cuboid.CuboidModelElement;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(BlockElement.class)
-public class ModelElementMixin implements JmxlElement {
+@Mixin(CuboidModelElement.class)
+public class CuboidModelElementMixin implements JmxlElement {
 
 	@Unique
 	ChunkSectionLayer layer = ChunkSectionLayer.SOLID;

@@ -1,7 +1,7 @@
 package net.darktree.test;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -39,7 +39,7 @@ public class Test implements ModInitializer {
 		Registry.register(BuiltInRegistries.BLOCK, ID, TEST_BLOCK);
 		Registry.register(BuiltInRegistries.ITEM, ID, TEST_ITEM);
 
-		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.BUILDING_BLOCKS).register(content -> {
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.BUILDING_BLOCKS).register(content -> {
 			content.accept(TEST_ITEM);
 		});
 	}
